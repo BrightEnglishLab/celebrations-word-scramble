@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celebrations and Cultures — Word Scramble</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #2ec4b6;
+            --error-color: #e71d36;
+            --text-color: #2b2d42;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .instruction {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 24px;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .level-badge {
+            background-color: #e9ecef;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .level-easy { color: #2ec4b6; background-color: #e6f9f7; }
+        .level-medium { color: #ff9f1c; background-color: #fff5e6; }
+        .level-hard { color: #e71d36; background-color: #ffebeb; }
+
+        .score-board {
+            color: var(--text-color);
+        }
+
+        .scrambled-word {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            color: var(--text-color);
+        }
+
+        .clue {
+            font-size: 15px;
+            color: #495057;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .clue::before {
+            content: "Clue: ";
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        input[type="text"].correct {
+            border-color: var(--success-color);
+            background-color: #f0fdfa;
+        }
+
+        input[type="text"].incorrect {
+            border-color: var(--error-color);
+            background-color: #fff5f5;
+        }
+
+        .feedback {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            min-height: 22px;
+        }
+
+        .feedback.correct { color: var(--success-color); }
+        .feedback.incorrect { color: var(--error-color); }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .results-screen {
+            display: none;
+        }
+
+        .results-screen h2 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .final-score {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="gameCard">
+        <!-- Game Play Screen -->
+        <div id="playScreen">
+            <h1>Celebrations and Cultures</h1>
+            <p class="instruction">Unscramble the letters to find the correct word!</p>
+            
+            <div class="meta-info">
+                <span id="levelBadge" class="level-badge level-easy">Easy</span>
+                <span class="score-board">Score: <span id="currentScore">0</span>/12</span>
+            </div>
+
+            <div class="scrambled-word" id="scrambledDisplay">----</div>
+            <div class="clue" id="clueDisplay">Loading clue...</div>
+
+            <div class="input-group">
+                <input type="text" id="wordInput" placeholder="Write the word..." autocomplete="off" spellcheck="false">
+            </div>
+
+            <div class="feedback" id="feedbackDisplay"></div>
+
+            <button id="actionBtn">Check Answer</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="results-screen">
+            <h2>Congratulations!</h2>
+            <p class="instruction">You finished the Word Scramble challenge!</p>
+            <div class="final-score" id="finalScoreDisplay">0 / 12</div>
+            <button id="restartBtn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const wordsDataset = [
+            { answer: "FLAG", clue: "A symbol of a country.", level: "easy" },
+            { answer: "FAMILY", clue: "Parents and children can be part of it.", level: "easy" },
+            { answer: "TURKEY", clue: "A traditional Thanksgiving food.", level: "easy" },
+            { answer: "PEACE", clue: "The opposite of war.", level: "easy" },
+            { answer: "PARADE", clue: "People march together in public.", level: "medium" },
+            { answer: "MAPLE", clue: "A leaf on Canada's flag.", level: "medium" },
+            { answer: "SUMMER", clue: "The hottest season of the year.", level: "medium" },
+            { answer: "FIREWORKS", clue: "Bright lights in the sky.", level: "medium" },
+            { answer: "BONFIRE", clue: "A large outdoor fire.", level: "hard" },
+            { answer: "SPRING", clue: "A season when many flowers grow.", level: "hard" },
+            { answer: "INDEPENDENCE", clue: "Freedom from being controlled by another country.", level: "hard" },
+            { answer: "EQUALITY", clue: "Having the same rights and opportunities.", level: "hard" }
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let isChecked = false;
+
+        const scrambledDisplay = document.getElementById("scrambledDisplay");
+        const clueDisplay = document.getElementById("clueDisplay");
+        const wordInput = document.getElementById("wordInput");
+        const feedbackDisplay = document.getElementById("feedbackDisplay");
+        const actionBtn = document.getElementById("actionBtn");
+        const currentScoreDoc = document.getElementById("currentScore");
+        const levelBadge = document.getElementById("levelBadge");
+        
+        const playScreen = document.getElementById("playScreen");
+        const resultsScreen = document.getElementById("resultsScreen");
+        const finalScoreDisplay = document.getElementById("finalScoreDisplay");
+        const restartBtn = document.getElementById("restartBtn");
+
+        function scrambleWord(word) {
+            let scrambled = word.split('');
+            while (scrambled.join('') === word) {
+                for (let i = scrambled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [scrambled[i], scrambled[j]] = [scrambled[j], scrambled[i]];
+                }
+            }
+            return scrambled.join(' ');
+        }
+
+        function loadQuestion() {
+            if (currentIndex >= wordsDataset.length) {
+                showResults();
+                return;
+            }
+
+            const currentData = wordsDataset[currentIndex];
+            levelBadge.textContent = currentData.level;
+            levelBadge.className = `level-badge level-${currentData.level}`;
+            scrambledDisplay.textContent = scrambleWord(currentData.answer);
+            clueDisplay.textContent = currentData.clue;
+            wordInput.value = "";
+            wordInput.className = "";
+            wordInput.disabled = false;
+            feedbackDisplay.textContent = "";
+            feedbackDisplay.className = "feedback";
+            actionBtn.textContent = "Check Answer";
+            isChecked = false;
+            wordInput.focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = wordInput.value.trim().toUpperCase();
+            const correctAnswer = wordsDataset[currentIndex].answer;
+
+            if (!userAnswer) {
+                feedbackDisplay.textContent = "Please write a word first!";
+                feedbackDisplay.className = "feedback incorrect";
+                return;
+            }
+
+            wordInput.disabled = true;
+            isChecked = true;
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                currentScoreDoc.textContent = score;
+                wordInput.classList.add("correct");
