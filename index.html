@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Celebrations and Cultures — Word Scramble</title>
+
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -71,9 +73,20 @@
             letter-spacing: 0.5px;
         }
 
-        .level-easy { color: #2ec4b6; background-color: #e6f9f7; }
-        .level-medium { color: #ff9f1c; background-color: #fff5e6; }
-        .level-hard { color: #e71d36; background-color: #ffebeb; }
+        .level-easy {
+            color: #2ec4b6;
+            background-color: #e6f9f7;
+        }
+
+        .level-medium {
+            color: #ff9f1c;
+            background-color: #fff5e6;
+        }
+
+        .level-hard {
+            color: #e71d36;
+            background-color: #ffebeb;
+        }
 
         .score-board {
             color: var(--text-color);
@@ -86,6 +99,7 @@
             margin-bottom: 12px;
             text-transform: uppercase;
             color: var(--text-color);
+            overflow-wrap: anywhere;
         }
 
         .clue {
@@ -138,8 +152,13 @@
             min-height: 22px;
         }
 
-        .feedback.correct { color: var(--success-color); }
-        .feedback.incorrect { color: var(--error-color); }
+        .feedback.correct {
+            color: var(--success-color);
+        }
+
+        .feedback.incorrect {
+            color: var(--error-color);
+        }
 
         button {
             background-color: var(--primary-color);
@@ -150,7 +169,8 @@
             font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            transition: background-color 0.2s ease,
+                        transform 0.1s ease;
             width: 100%;
         }
 
@@ -182,121 +202,410 @@
             color: var(--primary-color);
             margin-bottom: 30px;
         }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 25px 20px;
+            }
+
+            .scrambled-word {
+                font-size: 27px;
+                letter-spacing: 5px;
+            }
+
+            h1 {
+                font-size: 21px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div class="game-container" id="gameCard">
+
         <!-- Game Play Screen -->
         <div id="playScreen">
+
             <h1>Celebrations and Cultures</h1>
-            <p class="instruction">Unscramble the letters to find the correct word!</p>
-            
+
+            <p class="instruction">
+                Unscramble the letters to find the correct word!
+            </p>
+
             <div class="meta-info">
-                <span id="levelBadge" class="level-badge level-easy">Easy</span>
-                <span class="score-board">Score: <span id="currentScore">0</span>/12</span>
+                <span id="levelBadge" class="level-badge level-easy">
+                    Easy
+                </span>
+
+                <span class="score-board">
+                    Score:
+                    <span id="currentScore">0</span>/12
+                </span>
             </div>
 
-            <div class="scrambled-word" id="scrambledDisplay">----</div>
-            <div class="clue" id="clueDisplay">Loading clue...</div>
+            <div class="scrambled-word" id="scrambledDisplay">
+                ----
+            </div>
+
+            <div class="clue" id="clueDisplay">
+                Loading clue...
+            </div>
 
             <div class="input-group">
-                <input type="text" id="wordInput" placeholder="Write the word..." autocomplete="off" spellcheck="false">
+                <input
+                    type="text"
+                    id="wordInput"
+                    placeholder="Write the word..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Your answer"
+                >
             </div>
 
-            <div class="feedback" id="feedbackDisplay"></div>
+            <div
+                class="feedback"
+                id="feedbackDisplay"
+                aria-live="polite"
+            ></div>
 
-            <button id="actionBtn">Check Answer</button>
+            <button id="actionBtn" type="button">
+                Check Answer
+            </button>
+
         </div>
 
         <!-- Results Screen -->
         <div id="resultsScreen" class="results-screen">
+
             <h2>Congratulations!</h2>
-            <p class="instruction">You finished the Word Scramble challenge!</p>
-            <div class="final-score" id="finalScoreDisplay">0 / 12</div>
-            <button id="restartBtn">Play Again</button>
+
+            <p class="instruction">
+                You finished the Word Scramble challenge!
+            </p>
+
+            <div class="final-score" id="finalScoreDisplay">
+                0 / 12
+            </div>
+
+            <button id="restartBtn" type="button">
+                Play Again
+            </button>
+
         </div>
+
     </div>
 
     <script>
+        // WORD DATABASE
+
         const wordsDataset = [
-            { answer: "FLAG", clue: "A symbol of a country.", level: "easy" },
-            { answer: "FAMILY", clue: "Parents and children can be part of it.", level: "easy" },
-            { answer: "TURKEY", clue: "A traditional Thanksgiving food.", level: "easy" },
-            { answer: "PEACE", clue: "The opposite of war.", level: "easy" },
-            { answer: "PARADE", clue: "People march together in public.", level: "medium" },
-            { answer: "MAPLE", clue: "A leaf on Canada's flag.", level: "medium" },
-            { answer: "SUMMER", clue: "The hottest season of the year.", level: "medium" },
-            { answer: "FIREWORKS", clue: "Bright lights in the sky.", level: "medium" },
-            { answer: "BONFIRE", clue: "A large outdoor fire.", level: "hard" },
-            { answer: "SPRING", clue: "A season when many flowers grow.", level: "hard" },
-            { answer: "INDEPENDENCE", clue: "Freedom from being controlled by another country.", level: "hard" },
-            { answer: "EQUALITY", clue: "Having the same rights and opportunities.", level: "hard" }
+            {
+                answer: "FLAG",
+                clue: "A symbol of a country.",
+                level: "easy"
+            },
+            {
+                answer: "FAMILY",
+                clue: "Parents and children can be part of it.",
+                level: "easy"
+            },
+            {
+                answer: "TURKEY",
+                clue: "A traditional Thanksgiving food.",
+                level: "easy"
+            },
+            {
+                answer: "PEACE",
+                clue: "The opposite of war.",
+                level: "easy"
+            },
+            {
+                answer: "PARADE",
+                clue: "People march together in public.",
+                level: "medium"
+            },
+            {
+                answer: "MAPLE",
+                clue: "A leaf on Canada's flag.",
+                level: "medium"
+            },
+            {
+                answer: "SUMMER",
+                clue: "The hottest season of the year.",
+                level: "medium"
+            },
+            {
+                answer: "FIREWORKS",
+                clue: "Bright lights in the sky.",
+                level: "medium"
+            },
+            {
+                answer: "BONFIRE",
+                clue: "A large outdoor fire.",
+                level: "hard"
+            },
+            {
+                answer: "SPRING",
+                clue: "A season when many flowers grow.",
+                level: "hard"
+            },
+            {
+                answer: "INDEPENDENCE",
+                clue: "Freedom from being controlled by another country.",
+                level: "hard"
+            },
+            {
+                answer: "EQUALITY",
+                clue: "Having the same rights and opportunities.",
+                level: "hard"
+            }
         ];
+
+        // GAME VARIABLES
 
         let currentIndex = 0;
         let score = 0;
         let isChecked = false;
 
-        const scrambledDisplay = document.getElementById("scrambledDisplay");
-        const clueDisplay = document.getElementById("clueDisplay");
-        const wordInput = document.getElementById("wordInput");
-        const feedbackDisplay = document.getElementById("feedbackDisplay");
-        const actionBtn = document.getElementById("actionBtn");
-        const currentScoreDoc = document.getElementById("currentScore");
-        const levelBadge = document.getElementById("levelBadge");
-        
-        const playScreen = document.getElementById("playScreen");
-        const resultsScreen = document.getElementById("resultsScreen");
-        const finalScoreDisplay = document.getElementById("finalScoreDisplay");
-        const restartBtn = document.getElementById("restartBtn");
+        // HTML ELEMENTS
+
+        const scrambledDisplay =
+            document.getElementById("scrambledDisplay");
+
+        const clueDisplay =
+            document.getElementById("clueDisplay");
+
+        const wordInput =
+            document.getElementById("wordInput");
+
+        const feedbackDisplay =
+            document.getElementById("feedbackDisplay");
+
+        const actionBtn =
+            document.getElementById("actionBtn");
+
+        const currentScoreDoc =
+            document.getElementById("currentScore");
+
+        const levelBadge =
+            document.getElementById("levelBadge");
+
+        const playScreen =
+            document.getElementById("playScreen");
+
+        const resultsScreen =
+            document.getElementById("resultsScreen");
+
+        const finalScoreDisplay =
+            document.getElementById("finalScoreDisplay");
+
+        const restartBtn =
+            document.getElementById("restartBtn");
+
+
+        // SCRAMBLE WORD
 
         function scrambleWord(word) {
-            let scrambled = word.split('');
-            while (scrambled.join('') === word) {
-                for (let i = scrambled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [scrambled[i], scrambled[j]] = [scrambled[j], scrambled[i]];
-                }
+
+            const letters = word.split("");
+
+            // Fisher-Yates shuffle
+            for (let i = letters.length - 1; i > 0; i--) {
+
+                const j = Math.floor(Math.random() * (i + 1));
+
+                [letters[i], letters[j]] =
+                    [letters[j], letters[i]];
             }
-            return scrambled.join(' ');
+
+            // Ensure the scrambled word differs from the answer
+            if (letters.join("") === word) {
+                const first = letters[0];
+                letters[0] = letters[1];
+                letters[1] = first;
+            }
+
+            return letters.join(" ");
         }
 
+
+        // LOAD QUESTION
+
         function loadQuestion() {
+
             if (currentIndex >= wordsDataset.length) {
                 showResults();
                 return;
             }
 
             const currentData = wordsDataset[currentIndex];
+
             levelBadge.textContent = currentData.level;
-            levelBadge.className = `level-badge level-${currentData.level}`;
-            scrambledDisplay.textContent = scrambleWord(currentData.answer);
+
+            levelBadge.className =
+                `level-badge level-${currentData.level}`;
+
+            scrambledDisplay.textContent =
+                scrambleWord(currentData.answer);
+
             clueDisplay.textContent = currentData.clue;
+
             wordInput.value = "";
             wordInput.className = "";
             wordInput.disabled = false;
+
             feedbackDisplay.textContent = "";
             feedbackDisplay.className = "feedback";
+
             actionBtn.textContent = "Check Answer";
+            actionBtn.disabled = false;
+
             isChecked = false;
+
             wordInput.focus();
         }
 
-        function checkAnswer() {
-            const userAnswer = wordInput.value.trim().toUpperCase();
-            const correctAnswer = wordsDataset[currentIndex].answer;
 
-            if (!userAnswer) {
-                feedbackDisplay.textContent = "Please write a word first!";
-                feedbackDisplay.className = "feedback incorrect";
+        // CHECK ANSWER
+
+        function checkAnswer() {
+
+            if (isChecked) {
                 return;
             }
 
-            wordInput.disabled = true;
+            const userAnswer =
+                wordInput.value.trim().toUpperCase();
+
+            const correctAnswer =
+                wordsDataset[currentIndex].answer;
+
+            if (!userAnswer) {
+
+                feedbackDisplay.textContent =
+                    "Please write a word first!";
+
+                feedbackDisplay.className =
+                    "feedback incorrect";
+
+                wordInput.focus();
+
+                return;
+            }
+
             isChecked = true;
+            wordInput.disabled = true;
 
             if (userAnswer === correctAnswer) {
+
                 score++;
+
                 currentScoreDoc.textContent = score;
+
                 wordInput.classList.add("correct");
+
+                feedbackDisplay.textContent =
+                    "Excellent! Correct answer!";
+
+                feedbackDisplay.className =
+                    "feedback correct";
+
+            } else {
+
+                wordInput.classList.add("incorrect");
+
+                feedbackDisplay.textContent =
+                    `Not quite! The correct answer is ${correctAnswer}.`;
+
+                feedbackDisplay.className =
+                    "feedback incorrect";
+            }
+
+            // Move to the next question
+            actionBtn.textContent =
+                currentIndex === wordsDataset.length - 1
+                    ? "See Results"
+                    : "Next Word";
+        }
+
+
+        // SHOW FINAL RESULTS
+
+        function showResults() {
+
+            playScreen.style.display = "none";
+
+            resultsScreen.style.display = "block";
+
+            finalScoreDisplay.textContent =
+                `${score} / ${wordsDataset.length}`;
+        }
+
+
+        // RESTART GAME
+
+        function restartGame() {
+
+            currentIndex = 0;
+            score = 0;
+            isChecked = false;
+
+            currentScoreDoc.textContent = "0";
+
+            resultsScreen.style.display = "none";
+            playScreen.style.display = "block";
+
+            loadQuestion();
+        }
+
+
+        // MAIN BUTTON ACTION
+
+        actionBtn.addEventListener("click", function () {
+
+            if (!isChecked) {
+
+                checkAnswer();
+
+            } else {
+
+                currentIndex++;
+
+                loadQuestion();
+            }
+
+        });
+
+
+        // ALLOW ENTER KEY TO SUBMIT OR CONTINUE
+
+        wordInput.addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter") {
+
+                if (!isChecked) {
+                    checkAnswer();
+                } else {
+                    currentIndex++;
+                    loadQuestion();
+                }
+
+            }
+
+        });
+
+
+        // RESTART BUTTON
+
+        restartBtn.addEventListener("click", restartGame);
+
+
+        // START GAME
+
+        loadQuestion();
+
+    </script>
+
+</body>
+</html>
